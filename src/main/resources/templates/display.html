@@ -19,49 +19,51 @@
             flex-direction: column;
             color: white;
             overflow-x: hidden;
+            padding: 0;
+            margin: 0;
         }
 
         .header {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            font-size: 1.2em;
-        }
-
         .quiz-container {
-            flex: 1;
-            padding: 30px;
+            padding: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            max-width: 1400px;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(5, 1fr);
+            gap: 6px;
+            max-width: 100vw;
             margin: 0 auto;
+            height: 50vh;
+            box-sizing: border-box;
         }
 
         .question-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 25px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 10px;
             position: relative;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             transform: translateY(0) scale(1);
             opacity: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 45px;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         .question-card.answered {
@@ -74,64 +76,122 @@
 
         @keyframes slideOut {
             0% {
-                transform: translateY(0) scale(1);
+                transform: translateX(0) scale(1);
                 opacity: 1;
             }
             50% {
-                transform: translateY(-20px) scale(0.9);
+                transform: translateX(-20px) scale(0.95);
                 opacity: 0.5;
             }
             100% {
-                transform: translateY(-100px) scale(0.8);
+                transform: translateX(-100%) scale(0.9);
                 opacity: 0;
             }
         }
 
         @keyframes slideIn {
             0% {
-                transform: translateY(100px) scale(0.8);
+                transform: translateX(100%) scale(0.9);
                 opacity: 0;
             }
             50% {
-                transform: translateY(20px) scale(0.95);
+                transform: translateX(20px) scale(0.95);
                 opacity: 0.7;
             }
             100% {
-                transform: translateY(0) scale(1);
+                transform: translateX(0) scale(1);
                 opacity: 1;
             }
         }
 
-        .question-number {
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        .question-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 15px;
         }
 
         .question-text {
-            font-size: 1.4em;
-            margin: 20px 0;
-            line-height: 1.4;
+            font-size: 0.85em;
+            font-weight: 500;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            color: white;
+            flex: 1;
+        }
+
+        .answer-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 80px;
         }
 
         .answer-box {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 15px;
-            padding: 15px;
-            font-size: 1.3em;
+            background: rgba(76, 175, 80, 0.8);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8em;
             font-weight: bold;
             text-align: center;
-            margin-top: 15px;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: white;
+            transition: all 0.5s ease;
+            min-width: 35px;
+        }
+
+        .answer-box.hidden {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .answer-box.revealed {
+            background: rgba(76, 175, 80, 0.8);
+            animation: revealAnswer 0.6s ease-out;
+        }
+
+        @keyframes revealAnswer {
+            0% {
+                background: rgba(255, 255, 255, 0.1);
+                transform: scale(0.95);
+            }
+            50% {
+                background: rgba(76, 175, 80, 0.5);
+                transform: scale(1.05);
+            }
+            100% {
+                background: rgba(76, 175, 80, 0.8);
+                transform: scale(1);
+            }
+        }
+
+        .answerer-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+            min-width: 50px;
+        }
+
+        .answerer-info.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .answerer-name {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 0.7em;
+            text-align: center;
+        }
+
+        .answer-time {
+            font-size: 0.6em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 1px;
         }
 
         .correct-indicator {
@@ -141,10 +201,11 @@
             transform: translate(-50%, -50%) scale(0);
             background: rgba(76, 175, 80, 0.9);
             color: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 50%;
-            font-size: 2em;
+            font-size: 1.5em;
             animation: correctPulse 0.6s ease-out;
+            z-index: 10;
         }
 
         @keyframes correctPulse {
@@ -160,65 +221,86 @@
         }
 
         .leaderboard {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            padding: 15px;
-            border-radius: 15px;
-            min-width: 250px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
         }
 
         .leaderboard h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             text-align: center;
             color: #ffd700;
+            font-size: 1.3em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .leaderboard-item {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            align-items: center;
+            padding: 8px 15px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #ffd700;
+            margin-right: 10px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            color: white;
+        }
+
+        .leaderboard-score {
+            color: #4CAF50;
+            font-weight: bold;
         }
 
         .notification {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 25px;
-            font-size: 1.5em;
-            font-weight: bold;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+            display: none;
         }
 
-        .notification.show {
-            animation: notificationShow 2s ease-out;
-        }
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+            
+            .question-card {
+                padding: 6px 8px;
+                min-height: 40px;
+            }
+            
+            .question-text {
+                font-size: 0.75em;
+            }
+            
+            .answer-box {
+                padding: 3px 6px;
+                font-size: 0.7em;
+                min-width: 30px;
+            }
 
-        @keyframes notificationShow {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
+            .quiz-container {
+                height: 45vh;
+                gap: 4px;
             }
-            20% {
-                transform: translate(-50%, -50%) scale(1.1);
-                opacity: 1;
-            }
-            80% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
+
+            .answerer-info {
+                min-width: 35px;
             }
         }
     </style>
@@ -226,10 +308,6 @@
 <body>
     <div class="header">
         <h1>🧮 QUIZ MATEMATIKA LIVE 🧮</h1>
-        <div class="stats">
-            <div>Soal Terjawab: <span id="answered-count">0</span></div>
-            <div>Total Peserta: <span id="participant-count">0</span></div>
-        </div>
     </div>
 
     <div class="quiz-container" id="quiz-container">
@@ -302,7 +380,9 @@
                     id: this.questionIdCounter++,
                     question,
                     answer,
-                    type
+                    type,
+                    isAnswered: false,
+                    answerer: null
                 };
             }
 
@@ -321,20 +401,61 @@
                     questionCard.className = 'question-card';
                     questionCard.id = `question-${q.id}`;
                     questionCard.innerHTML = `
-                        <div class="question-number">#${q.id}</div>
-                        <div class="question-text">${q.question}</div>
-                        <div class="answer-box">Jawaban: ${q.answer}</div>
+                        <div class="question-content">
+                            <div class="question-text">${q.question}</div>
+                        </div>
+                        <div class="answer-section">
+                            <div class="answer-box hidden" id="answer-${q.id}">?</div>
+                            <div class="answerer-info" id="answerer-${q.id}">
+                                <span class="answerer-name"></span>
+                                <span class="answer-time"></span>
+                            </div>
+                        </div>
                     `;
                     container.appendChild(questionCard);
                 });
+            }
+
+            revealAnswer(questionId, username) {
+                const answerBox = document.getElementById(`answer-${questionId}`);
+                const answererInfo = document.getElementById(`answerer-${questionId}`);
+                const question = this.currentQuestions.find(q => q.id === questionId);
+
+                if (!answerBox || !answererInfo || !question) return;
+
+                // Reveal answer with animation
+                answerBox.classList.remove('hidden');
+                answerBox.classList.add('revealed');
+                answerBox.textContent = question.answer;
+
+                // Show answerer info
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                
+                answererInfo.querySelector('.answerer-name').textContent = username;
+                answererInfo.querySelector('.answer-time').textContent = '+8';
+                
+                setTimeout(() => {
+                    answererInfo.classList.add('show');
+                }, 300);
+
+                // Mark question as answered
+                question.isAnswered = true;
+                question.answerer = username;
             }
 
             answerQuestion(questionId, username) {
                 const questionIndex = this.currentQuestions.findIndex(q => q.id === questionId);
                 if (questionIndex === -1) return false;
 
+                const question = this.currentQuestions[questionIndex];
+                if (question.isAnswered) return false; // Already answered
+
                 const questionElement = document.getElementById(`question-${questionId}`);
                 if (!questionElement) return false;
+
+                // Reveal the answer first
+                this.revealAnswer(questionId, username);
 
                 // Add correct indicator
                 const indicator = document.createElement('div');
@@ -350,7 +471,7 @@
                 participant.score += 10;
                 participant.answers += 1;
 
-                // Animate question removal and add new question
+                // Animate question removal and add new question after delay
                 setTimeout(() => {
                     questionElement.classList.add('answered');
                     
@@ -367,27 +488,27 @@
                         newQuestionCard.className = 'question-card new';
                         newQuestionCard.id = `question-${newQuestion.id}`;
                         newQuestionCard.innerHTML = `
-                            <div class="question-number">#${newQuestion.id}</div>
-                            <div class="question-text">${newQuestion.question}</div>
-                            <div class="answer-box">Jawaban: ${newQuestion.answer}</div>
+                            <div class="question-content">
+                                <div class="question-text">${newQuestion.question}</div>
+                            </div>
+                            <div class="answer-section">
+                                <div class="answer-box hidden" id="answer-${newQuestion.id}">?</div>
+                                <div class="answerer-info" id="answerer-${newQuestion.id}">
+                                    <span class="answerer-name"></span>
+                                    <span class="answer-time"></span>
+                                </div>
+                            </div>
                         `;
                         
                         document.getElementById('quiz-container').appendChild(newQuestionCard);
                         
                         this.answeredCount++;
-                        this.updateStats();
                         this.updateLeaderboard();
-                        this.showNotification(`${username} menjawab benar! +10 poin`);
                         
                     }, 800);
-                }, 600);
+                }, 2000); // Delay to let people see the answer
 
                 return true;
-            }
-
-            updateStats() {
-                document.getElementById('answered-count').textContent = this.answeredCount;
-                document.getElementById('participant-count').textContent = this.participants.size;
             }
 
             updateLeaderboard() {
@@ -399,8 +520,9 @@
                 leaderboardList.innerHTML = sortedParticipants
                     .map(([username, data], index) => `
                         <div class="leaderboard-item">
-                            <span>${index + 1}. ${username}</span>
-                            <span>${data.score} pts</span>
+                            <span class="leaderboard-rank">${index + 1}.</span>
+                            <span class="leaderboard-name">${username}</span>
+                            <span class="leaderboard-score">${data.score} pts</span>
                         </div>
                     `).join('');
             }
@@ -421,11 +543,14 @@
                 
                 setInterval(() => {
                     if (this.currentQuestions.length > 0 && Math.random() < 0.3) {
-                        const randomQuestion = this.currentQuestions[Math.floor(Math.random() * this.currentQuestions.length)];
-                        const randomUser = demoUsers[Math.floor(Math.random() * demoUsers.length)];
-                        this.answerQuestion(randomQuestion.id, randomUser);
+                        const unansweredQuestions = this.currentQuestions.filter(q => !q.isAnswered);
+                        if (unansweredQuestions.length > 0) {
+                            const randomQuestion = unansweredQuestions[Math.floor(Math.random() * unansweredQuestions.length)];
+                            const randomUser = demoUsers[Math.floor(Math.random() * demoUsers.length)];
+                            this.answerQuestion(randomQuestion.id, randomUser);
+                        }
                     }
-                }, 3000);
+                }, 4000);
             }
 
             // Method untuk scanning jawaban (akan digunakan dengan script terpisah)
@@ -434,7 +559,7 @@
                 if (isNaN(messageNumber)) return false;
 
                 for (let question of this.currentQuestions) {
-                    if (question.answer === messageNumber) {
+                    if (!question.isAnswered && question.answer === messageNumber) {
                         return this.answerQuestion(question.id, username);
                     }
                 }
