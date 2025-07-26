@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class QuizApplication {
+public class TikTokQuizApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(QuizApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(TikTokQuizApplication.class, args);
+    }
 }

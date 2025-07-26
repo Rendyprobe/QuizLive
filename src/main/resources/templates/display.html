@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Matematika Live TikTok</title>
+    <title>TikTok Live Quiz</title>
     <style>
         * {
             margin: 0;
@@ -12,566 +12,400 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: white;
-            overflow-x: hidden;
-            padding: 0;
-            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .header {
             text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 2em;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .quiz-container {
-            padding: 10px;
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .questions-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(5, 1fr);
-            gap: 6px;
-            max-width: 100vw;
-            margin: 0 auto;
-            height: 50vh;
-            box-sizing: border-box;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
         .question-card {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 8px 10px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 45px;
-            box-sizing: border-box;
-            width: 100%;
+            overflow: hidden;
         }
 
-        .question-card.answered {
-            animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
-        .question-card.new {
-            animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
         }
 
-        @keyframes slideOut {
-            0% {
-                transform: translateX(0) scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: translateX(-20px) scale(0.95);
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateX(-100%) scale(0.9);
-                opacity: 0;
-            }
-        }
-
-        @keyframes slideIn {
-            0% {
-                transform: translateX(100%) scale(0.9);
-                opacity: 0;
-            }
-            50% {
-                transform: translateX(20px) scale(0.95);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateX(0) scale(1);
-                opacity: 1;
-            }
-        }
-
-        .question-content {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            gap: 15px;
+        .question-number {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
         .question-text {
-            font-size: 0.85em;
-            font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-            color: white;
-            flex: 1;
-        }
-
-        .answer-section {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            min-width: 80px;
-        }
-
-        .answer-box {
-            background: rgba(76, 175, 80, 0.8);
-            border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 0.8em;
+            font-size: 1.8rem;
             font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
             text-align: center;
+        }
+
+        .points {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
             color: white;
-            transition: all 0.5s ease;
-            min-width: 35px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
         }
 
-        .answer-box.hidden {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.4);
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-        }
-
-        .answer-box.revealed {
-            background: rgba(76, 175, 80, 0.8);
-            animation: revealAnswer 0.6s ease-out;
-        }
-
-        @keyframes revealAnswer {
-            0% {
-                background: rgba(255, 255, 255, 0.1);
-                transform: scale(0.95);
-            }
-            50% {
-                background: rgba(76, 175, 80, 0.5);
-                transform: scale(1.05);
-            }
-            100% {
-                background: rgba(76, 175, 80, 0.8);
-                transform: scale(1);
-            }
-        }
-
-        .answerer-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .correct-answer {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
             opacity: 0;
-            transform: translateX(10px);
             transition: all 0.3s ease;
-            min-width: 50px;
+            transform: translateY(10px);
         }
 
-        .answerer-info.show {
+        .correct-answer.show {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
         }
 
-        .answerer-name {
+        .correct-answer.animate {
+            animation: correctAnswerPulse 0.6s ease;
+        }
+
+        @keyframes correctAnswerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .username {
             font-weight: bold;
-            color: #4CAF50;
-            font-size: 0.7em;
-            text-align: center;
+            margin-bottom: 5px;
         }
 
-        .answer-time {
-            font-size: 0.6em;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 1px;
-        }
-
-        .correct-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(76, 175, 80, 0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            font-size: 1.5em;
-            animation: correctPulse 0.6s ease-out;
-            z-index: 10;
-        }
-
-        @keyframes correctPulse {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
+        .answer-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
         .leaderboard {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             margin-top: 20px;
         }
 
-        .leaderboard h3 {
-            margin-bottom: 15px;
+        .leaderboard h2 {
             text-align: center;
-            color: #ffd700;
-            font-size: 1.3em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
         }
 
         .leaderboard-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 15px;
-            margin: 5px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
 
-        .leaderboard-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
-        }
-
-        .leaderboard-rank {
+        .leaderboard-item:nth-child(2) { /* First place */
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
             font-weight: bold;
-            color: #ffd700;
-            margin-right: 10px;
         }
 
-        .leaderboard-name {
-            flex: 1;
+        .leaderboard-item:nth-child(3) { /* Second place */
+            background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+            color: #333;
+        }
+
+        .leaderboard-item:nth-child(4) { /* Third place */
+            background: linear-gradient(45deg, #cd7f32, #e6a85c);
             color: white;
         }
 
-        .leaderboard-score {
-            color: #4CAF50;
+        .leaderboard-item:nth-child(n+5) { /* 4th and 5th place */
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            color: #333;
+        }
+
+        .rank {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 30px;
+        }
+
+        .player-name {
+            flex: 1;
+            font-size: 1.1rem;
+            margin-left: 15px;
+        }
+
+        .points-display {
+            font-size: 1.1rem;
             font-weight: bold;
         }
 
-        .notification {
-            display: none;
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
         }
 
-        /* Mobile optimizations */
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.4em;
-            }
-            
-            .question-card {
-                padding: 6px 8px;
-                min-height: 40px;
-            }
-            
-            .question-text {
-                font-size: 0.75em;
-            }
-            
-            .answer-box {
-                padding: 3px 6px;
-                font-size: 0.7em;
-                min-width: 30px;
-            }
+        .connected {
+            background: #4ecdc4;
+            color: white;
+        }
 
-            .quiz-container {
-                height: 45vh;
-                gap: 4px;
-            }
+        .disconnected {
+            background: #ff6b6b;
+            color: white;
+        }
 
-            .answerer-info {
-                min-width: 35px;
-            }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🧮 QUIZ MATEMATIKA LIVE 🧮</h1>
+    <div class="connection-status" id="connectionStatus">
+        <span class="loading"></span> Menghubungkan ke TikTok...
     </div>
 
-    <div class="quiz-container" id="quiz-container">
-        <!-- Questions will be dynamically inserted here -->
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 KUIS MATEMATIKA LIVE TIKTOK 🧮</h1>
+            <div class="status">
+                📺 Live Quiz - Jawab di komentar untuk mendapat poin!
+            </div>
+        </div>
 
-    <div class="leaderboard">
-        <h3>🏆 Top Players</h3>
-        <div id="leaderboard-list">
-            <!-- Leaderboard will be populated here -->
+        <div class="questions-grid">
+            <div th:each="question, iterStat : ${questions}" class="question-card" th:id="'card-' + ${iterStat.index}">
+                <div class="question-number" th:text="'Soal ' + (${iterStat.index} + 1)"></div>
+                <div class="question-text" th:text="${question[0]} + ' = ?'"></div>
+                <div class="points" th:text="${question[2]} + ' Poin'"></div>
+                <div class="correct-answer" th:id="'answer-' + ${iterStat.index}">
+                    <div class="username">Menunggu jawaban...</div>
+                    <div class="answer-info">Jawab <span th:text="${question[1]}"></span> di komentar!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h2>🏆 PERINGKAT TERATAS 🏆</h2>
+            <div id="leaderboard-content">
+                <div th:each="user, iterStat : ${topUsers}" class="leaderboard-item">
+                    <div class="rank" th:text="${iterStat.index + 1}"></div>
+                    <div class="player-name" th:text="${user.username}"></div>
+                    <div class="points-display" th:text="${user.totalPoints} + ' poin'"></div>
+                </div>
+                <div th:if="${#lists.isEmpty(topUsers)}" class="leaderboard-item">
+                    <div class="player-name">Belum ada yang menjawab...</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="notification" id="notification">
-        <!-- Notifications will appear here -->
-    </div>
+    <!-- WebSocket Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
     <script>
-        class QuizManager {
-            constructor() {
-                this.questions = [];
-                this.currentQuestions = [];
-                this.answeredCount = 0;
-                this.participants = new Map();
-                this.questionIdCounter = 1;
-                this.init();
-            }
+        let stompClient = null;
+        const questions = /*[[${questions}]]*/ [];
 
-            init() {
-                this.generateInitialQuestions();
-                this.displayQuestions();
-                this.startSimulation(); // Untuk demo
-            }
-
-            generateQuestion() {
-                const types = ['addition', 'subtraction', 'multiplication', 'division'];
-                const type = types[Math.floor(Math.random() * types.length)];
+        // Initialize WebSocket connection
+        function connect() {
+            const socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                updateConnectionStatus(true);
                 
-                let question, answer;
-                
-                switch(type) {
-                    case 'addition':
-                        const a1 = Math.floor(Math.random() * 50) + 1;
-                        const b1 = Math.floor(Math.random() * 50) + 1;
-                        question = `${a1} + ${b1} = ?`;
-                        answer = a1 + b1;
-                        break;
-                    case 'subtraction':
-                        const a2 = Math.floor(Math.random() * 50) + 25;
-                        const b2 = Math.floor(Math.random() * 25) + 1;
-                        question = `${a2} - ${b2} = ?`;
-                        answer = a2 - b2;
-                        break;
-                    case 'multiplication':
-                        const a3 = Math.floor(Math.random() * 12) + 1;
-                        const b3 = Math.floor(Math.random() * 12) + 1;
-                        question = `${a3} × ${b3} = ?`;
-                        answer = a3 * b3;
-                        break;
-                    case 'division':
-                        const answer4 = Math.floor(Math.random() * 12) + 1;
-                        const b4 = Math.floor(Math.random() * 12) + 1;
-                        const a4 = answer4 * b4;
-                        question = `${a4} ÷ ${b4} = ?`;
-                        answer = answer4;
-                        break;
-                }
-
-                return {
-                    id: this.questionIdCounter++,
-                    question,
-                    answer,
-                    type,
-                    isAnswered: false,
-                    answerer: null
-                };
-            }
-
-            generateInitialQuestions() {
-                for(let i = 0; i < 10; i++) {
-                    this.currentQuestions.push(this.generateQuestion());
-                }
-            }
-
-            displayQuestions() {
-                const container = document.getElementById('quiz-container');
-                container.innerHTML = '';
-
-                this.currentQuestions.forEach((q, index) => {
-                    const questionCard = document.createElement('div');
-                    questionCard.className = 'question-card';
-                    questionCard.id = `question-${q.id}`;
-                    questionCard.innerHTML = `
-                        <div class="question-content">
-                            <div class="question-text">${q.question}</div>
-                        </div>
-                        <div class="answer-section">
-                            <div class="answer-box hidden" id="answer-${q.id}">?</div>
-                            <div class="answerer-info" id="answerer-${q.id}">
-                                <span class="answerer-name"></span>
-                                <span class="answer-time"></span>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(questionCard);
+                // Subscribe to quiz updates
+                stompClient.subscribe('/topic/quiz-updates', function (message) {
+                    const update = JSON.parse(message.body);
+                    handleQuizUpdate(update);
                 });
-            }
+            }, function(error) {
+                console.log('Connection error: ' + error);
+                updateConnectionStatus(false);
+                // Retry connection after 5 seconds
+                setTimeout(connect, 5000);
+            });
+        }
 
-            revealAnswer(questionId, username) {
-                const answerBox = document.getElementById(`answer-${questionId}`);
-                const answererInfo = document.getElementById(`answerer-${questionId}`);
-                const question = this.currentQuestions.find(q => q.id === questionId);
-
-                if (!answerBox || !answererInfo || !question) return;
-
-                // Reveal answer with animation
-                answerBox.classList.remove('hidden');
-                answerBox.classList.add('revealed');
-                answerBox.textContent = question.answer;
-
-                // Show answerer info
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                
-                answererInfo.querySelector('.answerer-name').textContent = username;
-                answererInfo.querySelector('.answer-time').textContent = '+8';
-                
-                setTimeout(() => {
-                    answererInfo.classList.add('show');
-                }, 300);
-
-                // Mark question as answered
-                question.isAnswered = true;
-                question.answerer = username;
-            }
-
-            answerQuestion(questionId, username) {
-                const questionIndex = this.currentQuestions.findIndex(q => q.id === questionId);
-                if (questionIndex === -1) return false;
-
-                const question = this.currentQuestions[questionIndex];
-                if (question.isAnswered) return false; // Already answered
-
-                const questionElement = document.getElementById(`question-${questionId}`);
-                if (!questionElement) return false;
-
-                // Reveal the answer first
-                this.revealAnswer(questionId, username);
-
-                // Add correct indicator
-                const indicator = document.createElement('div');
-                indicator.className = 'correct-indicator';
-                indicator.innerHTML = '✓';
-                questionElement.appendChild(indicator);
-
-                // Update participant score
-                if (!this.participants.has(username)) {
-                    this.participants.set(username, { score: 0, answers: 0 });
-                }
-                const participant = this.participants.get(username);
-                participant.score += 10;
-                participant.answers += 1;
-
-                // Animate question removal and add new question after delay
-                setTimeout(() => {
-                    questionElement.classList.add('answered');
-                    
-                    setTimeout(() => {
-                        // Remove answered question
-                        this.currentQuestions.splice(questionIndex, 1);
-                        questionElement.remove();
-                        
-                        // Add new question
-                        const newQuestion = this.generateQuestion();
-                        this.currentQuestions.push(newQuestion);
-                        
-                        const newQuestionCard = document.createElement('div');
-                        newQuestionCard.className = 'question-card new';
-                        newQuestionCard.id = `question-${newQuestion.id}`;
-                        newQuestionCard.innerHTML = `
-                            <div class="question-content">
-                                <div class="question-text">${newQuestion.question}</div>
-                            </div>
-                            <div class="answer-section">
-                                <div class="answer-box hidden" id="answer-${newQuestion.id}">?</div>
-                                <div class="answerer-info" id="answerer-${newQuestion.id}">
-                                    <span class="answerer-name"></span>
-                                    <span class="answer-time"></span>
-                                </div>
-                            </div>
-                        `;
-                        
-                        document.getElementById('quiz-container').appendChild(newQuestionCard);
-                        
-                        this.answeredCount++;
-                        this.updateLeaderboard();
-                        
-                    }, 800);
-                }, 2000); // Delay to let people see the answer
-
-                return true;
-            }
-
-            updateLeaderboard() {
-                const leaderboardList = document.getElementById('leaderboard-list');
-                const sortedParticipants = Array.from(this.participants.entries())
-                    .sort(([,a], [,b]) => b.score - a.score)
-                    .slice(0, 5);
-
-                leaderboardList.innerHTML = sortedParticipants
-                    .map(([username, data], index) => `
-                        <div class="leaderboard-item">
-                            <span class="leaderboard-rank">${index + 1}.</span>
-                            <span class="leaderboard-name">${username}</span>
-                            <span class="leaderboard-score">${data.score} pts</span>
-                        </div>
-                    `).join('');
-            }
-
-            showNotification(message) {
-                const notification = document.getElementById('notification');
-                notification.textContent = message;
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 2000);
-            }
-
-            // Simulasi untuk demo
-            startSimulation() {
-                const demoUsers = ['Ahmad', 'Siti', 'Budi', 'Rina', 'Dedi', 'Maya', 'Farid', 'Lina'];
-                
-                setInterval(() => {
-                    if (this.currentQuestions.length > 0 && Math.random() < 0.3) {
-                        const unansweredQuestions = this.currentQuestions.filter(q => !q.isAnswered);
-                        if (unansweredQuestions.length > 0) {
-                            const randomQuestion = unansweredQuestions[Math.floor(Math.random() * unansweredQuestions.length)];
-                            const randomUser = demoUsers[Math.floor(Math.random() * demoUsers.length)];
-                            this.answerQuestion(randomQuestion.id, randomUser);
-                        }
-                    }
-                }, 4000);
-            }
-
-            // Method untuk scanning jawaban (akan digunakan dengan script terpisah)
-            scanAnswer(username, message) {
-                const messageNumber = parseInt(message.trim());
-                if (isNaN(messageNumber)) return false;
-
-                for (let question of this.currentQuestions) {
-                    if (!question.isAnswered && question.answer === messageNumber) {
-                        return this.answerQuestion(question.id, username);
-                    }
-                }
-                return false;
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.innerHTML = '✅ Terhubung ke TikTok Live';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.innerHTML = '❌ Terputus dari TikTok Live';
+                statusElement.className = 'connection-status disconnected';
             }
         }
 
-        // Initialize quiz
-        const quiz = new QuizManager();
+        function handleQuizUpdate(update) {
+            if (update.type === 'correct_answer') {
+                // Find which question was answered correctly
+                for (let i = 0; i < questions.length; i++) {
+                    if (questions[i][1] === update.answer) {
+                        showCorrectAnswer(i, update.username, update.answer);
+                        break;
+                    }
+                }
+                
+                // Update leaderboard
+                updateLeaderboard();
+            }
+        }
 
-        // Expose quiz instance for external access
-        window.quizManager = quiz;
+        function showCorrectAnswer(questionIndex, username, answer) {
+            const answerElement = document.getElementById('answer-' + questionIndex);
+            const cardElement = document.getElementById('card-' + questionIndex);
+            
+            // Update answer display
+            answerElement.innerHTML = `
+                <div class="username">🎉 ${username}</div>
+                <div class="answer-info">Jawab benar: ${answer} (+${questions[questionIndex][2]} poin)</div>
+            `;
+            
+            // Show with animation
+            answerElement.classList.add('show', 'animate');
+            cardElement.classList.add('pulse');
+            
+            // Remove pulse animation after 3 seconds
+            setTimeout(() => {
+                cardElement.classList.remove('pulse');
+                answerElement.classList.remove('animate');
+            }, 3000);
+        }
+
+        function updateLeaderboard() {
+            fetch('/api/leaderboard')
+                .then(response => response.json())
+                .then(data => {
+                    const leaderboardContent = document.getElementById('leaderboard-content');
+                    
+                    if (data.length === 0) {
+                        leaderboardContent.innerHTML = `
+                            <div class="leaderboard-item">
+                                <div class="player-name">Belum ada yang menjawab...</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    leaderboardContent.innerHTML = data.map((user, index) => `
+                        <div class="leaderboard-item">
+                            <div class="rank">${index + 1}</div>
+                            <div class="player-name">${user.username}</div>
+                            <div class="points-display">${user.totalPoints} poin</div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => console.error('Error updating leaderboard:', error));
+        }
+
+        // Connect when page loads
+        window.addEventListener('load', function() {
+            connect();
+            
+            // Update leaderboard every 10 seconds
+            setInterval(updateLeaderboard, 10000);
+        });
+
+        // Show all answers initially as "waiting"
+        window.addEventListener('DOMContentLoaded', function() {
+            for (let i = 0; i < questions.length; i++) {
+                const answerElement = document.getElementById('answer-' + i);
+                if (answerElement) {
+                    answerElement.classList.add('show');
+                }
+            }
+        });
     </script>
 </body>
 </html>
