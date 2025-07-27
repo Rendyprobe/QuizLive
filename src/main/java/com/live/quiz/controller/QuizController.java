@@ -73,6 +73,9 @@ public class QuizController {
         }
     }
 
+    @GetMapping("/display")
+    public String showQuizPage() {
+        return "display"; // akan menampilkan display.html di folder templates
     @GetMapping("/test-tiktok")
 @ResponseBody
 public String testTikTok() {
