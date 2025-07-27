@@ -56,7 +56,7 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -76,6 +76,14 @@
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
         }
 
+        .question-card.answered::before {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .question-card.answered {
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        }
+
         .question-number {
             color: #666;
             font-size: 0.9rem;
@@ -89,6 +97,7 @@
             color: #333;
             margin-bottom: 15px;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         .points {
@@ -100,6 +109,7 @@
             font-weight: bold;
             display: inline-block;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
         }
 
         .correct-answer {
@@ -244,6 +254,42 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        .question-changing {
+            animation: questionChange 1s ease;
+        }
+
+        @keyframes questionChange {
+            0% { 
+                transform: scale(1); 
+                background: white;
+            }
+            25% { 
+                transform: scale(1.05); 
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                color: white;
+            }
+            50% { 
+                transform: scale(1.1); 
+                background: linear-gradient(45deg, #4ecdc4, #44a08d);
+                color: white;
+            }
+            75% { 
+                transform: scale(1.05); 
+                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+                color: white;
+            }
+            100% { 
+                transform: scale(1); 
+                background: white;
+                color: #333;
+            }
+        }
+
+        .new-question {
+            border: 3px solid #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -262,11 +308,11 @@
         <div class="questions-grid">
             <div th:each="question, iterStat : ${questions}" class="question-card" th:id="'card-' + ${iterStat.index}">
                 <div class="question-number" th:text="'Soal ' + (${iterStat.index} + 1)"></div>
-                <div class="question-text" th:text="${question[0]} + ' = ?'"></div>
-                <div class="points" th:text="${question[2]} + ' Poin'"></div>
+                <div class="question-text" th:id="'question-text-' + ${iterStat.index}" th:text="${question[0]} + ' = ?'"></div>
+                <div class="points" th:id="'points-' + ${iterStat.index}" th:text="${question[2]} + ' Poin'"></div>
                 <div class="correct-answer" th:id="'answer-' + ${iterStat.index}">
                     <div class="username">Menunggu jawaban...</div>
-                    <div class="answer-info">Jawab <span th:text="${question[1]}"></span> di komentar!</div>
+                    <div class="answer-info">Jawab <span th:id="'correct-answer-' + ${iterStat.index}" th:text="${question[1]}"></span> di komentar!</div>
                 </div>
             </div>
         </div>
@@ -328,39 +374,73 @@
         }
 
         function handleQuizUpdate(update) {
+            console.log('Quiz update:', update);
+            
             if (update.type === 'correct_answer') {
-                // Find which question was answered correctly
-                for (let i = 0; i < questions.length; i++) {
-                    if (questions[i][1] === update.answer) {
-                        showCorrectAnswer(i, update.username, update.answer);
-                        break;
-                    }
-                }
-                
-                // Update leaderboard
+                showCorrectAnswer(update.questionIndex, update.username, update.answer, update.points);
                 updateLeaderboard();
+            } else if (update.type === 'question_changed') {
+                changeQuestion(update.questionIndex, update.newQuestion, update.newAnswer, update.newPoints);
+            } else if (update.type === 'connection_status') {
+                updateConnectionStatus(update.connected);
             }
         }
 
-        function showCorrectAnswer(questionIndex, username, answer) {
+        function showCorrectAnswer(questionIndex, username, answer, points) {
             const answerElement = document.getElementById('answer-' + questionIndex);
             const cardElement = document.getElementById('card-' + questionIndex);
             
             // Update answer display
             answerElement.innerHTML = `
                 <div class="username">🎉 ${username}</div>
-                <div class="answer-info">Jawab benar: ${answer} (+${questions[questionIndex][2]} poin)</div>
+                <div class="answer-info">Jawab benar: ${answer} (+${points} poin)</div>
             `;
             
             // Show with animation
             answerElement.classList.add('show', 'animate');
-            cardElement.classList.add('pulse');
+            cardElement.classList.add('pulse', 'answered');
             
             // Remove pulse animation after 3 seconds
             setTimeout(() => {
                 cardElement.classList.remove('pulse');
                 answerElement.classList.remove('animate');
             }, 3000);
+        }
+
+        function changeQuestion(questionIndex, newQuestion, newAnswer, newPoints) {
+            const questionTextElement = document.getElementById('question-text-' + questionIndex);
+            const pointsElement = document.getElementById('points-' + questionIndex);
+            const correctAnswerElement = document.getElementById('correct-answer-' + questionIndex);
+            const answerElement = document.getElementById('answer-' + questionIndex);
+            const cardElement = document.getElementById('card-' + questionIndex);
+            
+            // Add changing animation
+            cardElement.classList.add('question-changing');
+            
+            setTimeout(() => {
+                // Update question content
+                questionTextElement.textContent = newQuestion + ' = ?';
+                pointsElement.textContent = newPoints + ' Poin';
+                correctAnswerElement.textContent = newAnswer;
+                
+                // Reset answer display
+                answerElement.innerHTML = `
+                    <div class="username">Soal baru!</div>
+                    <div class="answer-info">Jawab <span>${newAnswer}</span> di komentar!</div>
+                `;
+                answerElement.classList.add('show');
+                
+                // Remove old states and add new question highlight
+                cardElement.classList.remove('answered', 'question-changing');
+                cardElement.classList.add('new-question');
+                
+                // Remove new question highlight after 5 seconds
+                setTimeout(() => {
+                    cardElement.classList.remove('new-question');
+                }, 5000);
+                
+                console.log(`Soal ${questionIndex + 1} diganti: ${newQuestion} = ${newAnswer}`);
+            }, 500);
         }
 
         function updateLeaderboard() {

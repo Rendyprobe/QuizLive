@@ -43,6 +43,17 @@ public class QuizController {
         return quizService.getTopUsers();
     }
     
+    @PostMapping("/api/reset-quiz")
+    @ResponseBody
+    public ResponseEntity<String> resetQuiz() {
+        try {
+            quizService.resetQuiz();
+            return ResponseEntity.ok("Quiz berhasil direset");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Gagal reset quiz: " + e.getMessage());
+        }
+    }
+    
     @PostMapping("/api/connect-tiktok")
     @ResponseBody
     public ResponseEntity<String> connectTikTok() {
