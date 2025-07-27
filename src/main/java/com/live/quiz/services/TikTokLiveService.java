@@ -1,11 +1,11 @@
-package com.live.quiz.service;
+package com.live.quiz.services;
 
 import io.github.jwdeveloper.tiktok.TikTokLive;
 import io.github.jwdeveloper.tiktok.live.LiveClient;
-import io.github.jwdeveloper.tiktok.data.events.common.TikTokCommentEvent;
-import io.github.jwdeveloper.tiktok.data.events.common.TikTokConnectedEvent;
-import io.github.jwdeveloper.tiktok.data.events.common.TikTokDisconnectedEvent;
-import io.github.jwdeveloper.tiktok.data.events.common.TikTokErrorEvent;
+import io.github.jwdeveloper.tiktok.data.events.TikTokCommentEvent;
+import io.github.jwdeveloper.tiktok.data.events.TikTokConnectedEvent;
+import io.github.jwdeveloper.tiktok.data.events.TikTokDisconnectedEvent;
+import io.github.jwdeveloper.tiktok.data.events.TikTokErrorEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,7 @@ public class TikTokLiveService {
     private boolean autoConnect;
     
     private LiveClient liveClient;
+    private boolean connected = false;
     
     @PostConstruct
     public void init() {
@@ -56,12 +57,13 @@ public class TikTokLiveService {
                 
         } catch (Exception e) {
             logger.error("Failed to connect to TikTok Live: {}", e.getMessage());
+            connected = false;
         }
     }
     
     private void handleComment(LiveClient liveClient, TikTokCommentEvent event) {
         try {
-            String username = event.getUser().getDisplayName();
+            String username = event.getUser().getProfileName();
             String comment = event.getText();
             
             logger.info("Comment from {}: {}", username, comment);
@@ -88,18 +90,20 @@ public class TikTokLiveService {
     }
     
     private void handleConnected(LiveClient liveClient, TikTokConnectedEvent event) {
-        logger.info("Connected to TikTok Live room: {}", event.getLiveRoom().getTitle());
+        connected = true;
+        logger.info("Connected to TikTok Live room");
         
         // Kirim status connection ke frontend
         Map<String, Object> status = new HashMap<>();
         status.put("type", "connection_status");
         status.put("connected", true);
-        status.put("roomTitle", event.getLiveRoom().getTitle());
+        status.put("roomTitle", "Connected to TikTok Live");
         
         messagingTemplate.convertAndSend("/topic/quiz-updates", status);
     }
     
     private void handleDisconnected(LiveClient liveClient, TikTokDisconnectedEvent event) {
+        connected = false;
         logger.info("Disconnected from TikTok Live");
         
         // Kirim status disconnection ke frontend
@@ -111,6 +115,7 @@ public class TikTokLiveService {
     }
     
     private void handleError(LiveClient liveClient, TikTokErrorEvent event) {
+        connected = false;
         logger.error("TikTok Live error: {}", event.getException().getMessage());
         
         // Kirim error status ke frontend
@@ -125,6 +130,7 @@ public class TikTokLiveService {
         if (liveClient != null) {
             try {
                 liveClient.disconnect();
+                connected = false;
                 logger.info("Disconnected from TikTok Live");
             } catch (Exception e) {
                 logger.error("Error disconnecting from TikTok Live: {}", e.getMessage());
@@ -133,6 +139,6 @@ public class TikTokLiveService {
     }
     
     public boolean isConnected() {
-        return liveClient != null && liveClient.getClientData().isConnected();
+        return connected;
     }
 }

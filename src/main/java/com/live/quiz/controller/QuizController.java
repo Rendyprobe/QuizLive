@@ -76,16 +76,16 @@ public class QuizController {
     @GetMapping("/display")
     public String showQuizPage() {
         return "display"; // akan menampilkan display.html di folder templates
-    @GetMapping("/test-tiktok")
-@ResponseBody
-public String testTikTok() {
-    try {
-        tikTokLiveService.connectToTikTokLive();
-        return "TikTok connection test started. Check logs.";
-    } catch (Exception e) {
-        return "Error: " + e.getMessage();
     }
-}
-
     
+    @GetMapping("/test-tiktok")
+    @ResponseBody
+    public String testTikTok() {
+        try {
+            tikTokLiveService.connectToTikTokLive();
+            return "TikTok connection test started. Check logs.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
 }
