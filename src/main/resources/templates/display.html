@@ -44,7 +44,7 @@
         .main-content {
             display: flex;
             flex: 1;
-            gap: 10px;
+            gap: 3px;
         }
 
         .questions-section {
@@ -56,7 +56,7 @@
         .questions-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(5, 1fr);
+            grid-template-rows: repeat(7, 1fr);
             gap: 2px;
         }
 
@@ -124,7 +124,7 @@
         }
 
         .question-text {
-            font-size: 0.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             text-align: center;
             margin-bottom: 2px;
@@ -294,10 +294,7 @@
             margin-bottom: 1px;
         }
 
-        .player-points {
-            font-size: 0.6rem;
-            opacity: 0.8;
-        }
+        /* REMOVED .player-points style - this is the duplicate points display */
 
         .points-badge {
             background: rgba(255,255,255,0.2);
@@ -429,7 +426,7 @@
                             <div class="rank" th:text="${iterStat.index + 1}"></div>
                             <div class="player-info">
                                 <div class="player-name" th:text="${user.username}"></div>
-                                <div class="player-points" th:text="${user.totalPoints} + ' poin'"></div>
+                                <!-- REMOVED: <div class="player-points" th:text="${user.totalPoints} + ' poin'"></div> -->
                             </div>
                             <div class="points-badge" th:text="${user.totalPoints} + ' poin'"></div>
                         </div>
@@ -613,7 +610,6 @@
                                 <div class="rank">${rankEmoji}</div>
                                 <div class="player-info">
                                     <div class="player-name">${user.username}</div>
-                                    <div class="player-points">${user.totalPoints} poin</div>
                                 </div>
                                 <div class="points-badge">${user.totalPoints}</div>
                             </div>

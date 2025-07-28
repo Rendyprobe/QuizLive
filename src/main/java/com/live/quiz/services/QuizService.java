@@ -1,15 +1,22 @@
 package com.live.quiz.services;
 
-import com.live.quiz.entity.AnswerHistory;
-import com.live.quiz.entity.User;
-import com.live.quiz.repository.AnswerHistoryRepository;
-import com.live.quiz.repository.UserRepository;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import com.live.quiz.entity.AnswerHistory;
+import com.live.quiz.entity.User;
+import com.live.quiz.repository.AnswerHistoryRepository;
+import com.live.quiz.repository.UserRepository;
 
 @Service
 public class QuizService {
@@ -34,8 +41,13 @@ public class QuizService {
         {"100 - 37", "63", "10"},
         {"12 × 8 ÷ 4", "24", "15"},
         {"3⁴", "81", "20"},
-        {"45 + 78 - 23", "100", "10"}
+        {"45 + 78 - 23", "100", "10"},
+        {"18 × 6", "108", "10"},    
+        {"225 ÷ 15", "15", "15"},    
+        {"7² - 10", "39", "15"},    
+        {"√169", "13", "20"}        
     };
+
     
     // Pool soal tambahan untuk mengganti soal yang sudah dijawab
     private static final String[][] ADDITIONAL_QUESTIONS = {
@@ -57,7 +69,15 @@ public class QuizService {
         {"75 + 38", "113", "10"},
         {"18 × 4 ÷ 6", "12", "15"},
         {"9²", "81", "20"},
-        {"300 - 156", "144", "10"}
+        {"300 - 156", "144", "10"},
+        {"13 × 8", "104", "10"},    
+        {"196 ÷ 14", "14", "15"},
+        {"8² + 15", "79", "15"},
+        {"√121", "11", "20"},
+        {"250 - 67", "183", "10"},
+        {"15 × 9", "135", "10"},
+        {"289 ÷ 17", "17", "15"},
+        {"6³", "216", "25"}
     };
     
     private int additionalQuestionIndex = 0;
@@ -225,7 +245,7 @@ public class QuizService {
     }
     
     public List<User> getTopUsers() {
-        return userRepository.findTop20ByOrderByTotalPointsDesc();
+        return userRepository.findTop22ByOrderByTotalPointsDesc();
     }
     
     public List<AnswerHistory> getCorrectAnswers() {
@@ -238,7 +258,7 @@ public class QuizService {
     
     // Method untuk reset quiz (opsional)
     public void resetQuiz() {
-        // Reset ke soal awal
+        // Reset ke soal awal dengan 14 soal
         QUESTIONS = new String[][]{
             {"15 + 27", "42", "10"},
             {"8 × 7", "56", "10"},
@@ -249,7 +269,11 @@ public class QuizService {
             {"100 - 37", "63", "10"},
             {"12 × 8 ÷ 4", "24", "15"},
             {"3⁴", "81", "20"},
-            {"45 + 78 - 23", "100", "10"}
+            {"45 + 78 - 23", "100", "10"},
+            {"18 × 6", "108", "10"},
+            {"225 ÷ 15", "15", "15"},
+            {"7² - 10", "39", "15"},
+            {"√169", "13", "20"}
         };
         
         additionalQuestionIndex = 0;
