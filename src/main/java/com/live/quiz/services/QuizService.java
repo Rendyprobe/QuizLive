@@ -62,6 +62,9 @@ public class QuizService {
     
     private int additionalQuestionIndex = 0;
     
+    // Track soal mana yang sudah dijawab untuk setiap user
+    private Set<String> answeredQuestions = new HashSet<>();
+    
     public String[][] getQuestions() {
         return QUESTIONS;
     }
@@ -72,30 +75,55 @@ public class QuizService {
         for (int i = 0; i < QUESTIONS.length; i++) {
             String correctAnswer = QUESTIONS[i][1];
             if (comment.trim().equals(correctAnswer)) {
-                // Cek apakah user sudah menjawab soal ini sebelumnya
-                Optional<AnswerHistory> existingAnswer = answerHistoryRepository
-                    .findByUsernameAndQuestionNumber(username, i + 1);
                 
-                if (existingAnswer.isEmpty()) {
-                    int points = Integer.parseInt(QUESTIONS[i][2]);
+                // Generate unique key untuk soal ini berdasarkan konten soal, bukan indeks
+                String questionKey = QUESTIONS[i][0] + "_" + QUESTIONS[i][1];
+                String userQuestionKey = username + "_" + questionKey;
+                
+                // Cek apakah user sudah menjawab soal dengan konten yang sama
+                if (!answeredQuestions.contains(userQuestionKey)) {
                     
-                    // Simpan ke answer history
-                    AnswerHistory history = new AnswerHistory(username, i + 1, comment, true, points);
-                    answerHistoryRepository.save(history);
+                    // Cek di database juga untuk memastikan
+                    Optional<AnswerHistory> existingAnswer = answerHistoryRepository
+                        .findByUsernameAndQuestionNumber(username, i + 1);
                     
-                    // Update atau buat user baru
-                    User user = userRepository.findByUsername(username)
-                        .orElse(new User(username));
-                    user.addPoints(points);
-                    userRepository.save(user);
+                    // Jika belum ada di database, atau jika ada tapi soalnya sudah berbeda
+                    boolean canAnswer = true;
+                    if (existingAnswer.isPresent()) {
+                        // Cek apakah jawaban di database untuk soal yang sama
+                        AnswerHistory history = existingAnswer.get();
+                        // Jika jawaban sebelumnya untuk soal yang berbeda, maka boleh jawab
+                        if (history.getAnswer().equals(correctAnswer)) {
+                            canAnswer = false; // Sudah pernah jawab soal dengan jawaban yang sama
+                        }
+                    }
                     
-                    // Kirim notifikasi jawaban benar ke frontend
-                    sendCorrectAnswerNotification(i, username, comment, points);
-                    
-                    // Ganti soal dengan soal baru secara otomatis
-                    changeQuestion(i);
-                    
-                    return true;
+                    if (canAnswer) {
+                        int points = Integer.parseInt(QUESTIONS[i][2]);
+                        
+                        // Simpan ke answer history
+                        AnswerHistory history = new AnswerHistory(username, i + 1, comment, true, points);
+                        answerHistoryRepository.save(history);
+                        
+                        // Update atau buat user baru
+                        User user = userRepository.findByUsername(username)
+                            .orElse(new User(username));
+                        user.addPoints(points);
+                        userRepository.save(user);
+                        
+                        // Mark soal ini sudah dijawab oleh user ini
+                        answeredQuestions.add(userQuestionKey);
+                        
+                        // Kirim notifikasi jawaban benar ke frontend
+                        sendCorrectAnswerNotification(i, username, comment, points);
+                        
+                        // Ganti soal dengan soal baru secara otomatis
+                        changeQuestion(i);
+                        
+                        System.out.println("User " + username + " berhasil menjawab soal " + (i+1) + ": " + comment);
+                        
+                        return true;
+                    }
                 }
             }
         }
@@ -136,7 +164,64 @@ public class QuizService {
             
             // Log perubahan soal
             System.out.println("Soal " + (questionIndex + 1) + " diganti dengan: " + newQuestion[0] + " = " + newQuestion[1]);
+        } else {
+            // Jika habis soal tambahan, reset ke pool awal tapi dengan soal random
+            resetToRandomQuestion(questionIndex);
         }
+    }
+    
+    private void resetToRandomQuestion(int questionIndex) {
+        // Buat soal random sederhana
+        Random random = new Random();
+        int a = random.nextInt(50) + 10; // 10-59
+        int b = random.nextInt(30) + 5;  // 5-34
+        
+        String[] operations = {"+", "-", "×"};
+        String operation = operations[random.nextInt(operations.length)];
+        
+        int answer;
+        String questionText;
+        
+        switch (operation) {
+            case "+":
+                answer = a + b;
+                questionText = a + " + " + b;
+                break;
+            case "-":
+                if (a < b) {
+                    int temp = a;
+                    a = b;
+                    b = temp;
+                }
+                answer = a - b;
+                questionText = a + " - " + b;
+                break;
+            case "×":
+                answer = a * b;
+                questionText = a + " × " + b;
+                break;
+            default:
+                answer = a + b;
+                questionText = a + " + " + b;
+        }
+        
+        String[] newQuestion = {questionText, String.valueOf(answer), "10"};
+        
+        // Ganti soal di array
+        QUESTIONS[questionIndex] = newQuestion.clone();
+        
+        // Kirim update soal baru ke frontend
+        Map<String, Object> update = new HashMap<>();
+        update.put("type", "question_changed");
+        update.put("questionIndex", questionIndex);
+        update.put("newQuestion", newQuestion[0]);
+        update.put("newAnswer", newQuestion[1]);
+        update.put("newPoints", newQuestion[2]);
+        update.put("timestamp", System.currentTimeMillis());
+        
+        messagingTemplate.convertAndSend("/topic/quiz-updates", update);
+        
+        System.out.println("Soal " + (questionIndex + 1) + " diganti dengan soal random: " + questionText + " = " + answer);
     }
     
     public List<User> getTopUsers() {
@@ -168,6 +253,7 @@ public class QuizService {
         };
         
         additionalQuestionIndex = 0;
+        answeredQuestions.clear(); // Clear tracking
         
         // Kirim notifikasi reset ke frontend
         Map<String, Object> update = new HashMap<>();
@@ -176,5 +262,7 @@ public class QuizService {
         update.put("timestamp", System.currentTimeMillis());
         
         messagingTemplate.convertAndSend("/topic/quiz-updates", update);
+        
+        System.out.println("Quiz berhasil direset");
     }
 }

@@ -18,7 +18,7 @@
             height: 100vh;
             overflow: hidden;
             padding: 0;
-            margin: 0;
+            margin-bottom: px;
         }
 
         .container {
@@ -58,7 +58,6 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(5, 1fr);
             gap: 2px;
-            flex: 1;
         }
 
         .question-card {
@@ -72,7 +71,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 65px;
+            height: 90px;
         }
 
         .question-card::before {
@@ -259,19 +258,19 @@
             min-height: 26px;
         }
 
-        .leaderboard-item:nth-child(2) {
+        .leaderboard-item:nth-child(1) {
             background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             color: #333;
             font-weight: bold;
             box-shadow: 0 3px 15px rgba(255, 215, 0, 0.4);
         }
 
-        .leaderboard-item:nth-child(3) {
+        .leaderboard-item:nth-child(2) {
             background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
             color: #333;
         }
 
-        .leaderboard-item:nth-child(4) {
+        .leaderboard-item:nth-child(3) {
             background: linear-gradient(135deg, #cd7f32 0%, #e6a85c 100%);
             color: #fff;
         }
@@ -432,7 +431,7 @@
                                 <div class="player-name" th:text="${user.username}"></div>
                                 <div class="player-points" th:text="${user.totalPoints} + ' poin'"></div>
                             </div>
-                            <div class="points-badge" th:text="${user.totalPoints}"></div>
+                            <div class="points-badge" th:text="${user.totalPoints} + ' poin'"></div>
                         </div>
                         <div th:if="${#lists.isEmpty(topUsers)}" class="leaderboard-item">
                             <div class="player-info">
