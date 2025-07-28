@@ -13,240 +13,323 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
+            height: 100vh;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            padding: 3px 0;
+            margin-bottom: 3px;
         }
 
         .status {
-            background: rgba(255,255,255,0.1);
-            padding: 10px 20px;
-            border-radius: 25px;
-            color: white;
-            display: inline-block;
-            margin-bottom: 20px;
+            font-size: 0.7rem;
+            color: #fff;
+            opacity: 0.7;
         }
 
-        .questions-grid {
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+        }
+
+        .questions-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .questions-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 2px;
+            flex: 1;
         }
 
         .question-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #232741 0%, #2a2d47 100%);
+            border-radius: 8px;
+            padding: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 2px solid transparent;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-
-        .question-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            min-height: 65px;
         }
 
         .question-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff0050, #ff4500, #ff0050);
+            border-radius: 12px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
         }
 
         .question-card.answered::before {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            opacity: 1;
+            animation: borderGlow 2s ease-in-out infinite;
         }
 
-        .question-card.answered {
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
         }
 
         .question-number {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff0050 0%, #ff4500 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.55rem;
             font-weight: bold;
-        }
-
-        .question-text {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
         }
 
         .points {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.55rem;
+            font-weight: bold;
+            box-shadow: 0 1px 5px rgba(255, 215, 0, 0.3);
+        }
+
+        .question-text {
             font-size: 0.8rem;
             font-weight: bold;
-            display: inline-block;
-            margin-bottom: 15px;
+            text-align: center;
+            margin-bottom: 2px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .answer-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+            padding: 2px;
+            text-align: center;
+            min-height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             transition: all 0.3s ease;
+            font-size: 0.6rem;
         }
 
-        .correct-answer {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-top: 10px;
-            opacity: 0;
-            transition: all 0.3s ease;
-            transform: translateY(10px);
+        .answer-section.show-answer {
+            background: linear-gradient(135deg, #00c851 0%, #00ff88 100%);
+            animation: answerReveal 0.6s ease;
         }
 
-        .correct-answer.show {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes answerReveal {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
-        .correct-answer.animate {
-            animation: correctAnswerPulse 0.6s ease;
+        .waiting-text {
+            opacity: 0.7;
+            font-size: 0.55rem;
         }
 
-        @keyframes correctAnswerPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .winner-info {
+            animation: slideIn 0.5s ease;
         }
 
-        .username {
+        @keyframes slideIn {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .winner-name {
+            font-size: 0.65rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 1px;
         }
 
-        .answer-info {
-            font-size: 0.9rem;
+        .winner-answer {
+            font-size: 0.55rem;
             opacity: 0.9;
         }
 
+        .leaderboard-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
         .leaderboard {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            margin-top: 20px;
+            background: linear-gradient(135deg, #232741 0%, #2a2d47 100%);
+            border-radius: 10px;
+            padding: 6px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .leaderboard h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        #leaderboard-content {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #ff0050 #232741;
+        }
+
+        #leaderboard-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #leaderboard-content::-webkit-scrollbar-track {
+            background: #232741;
+            border-radius: 2px;
+        }
+
+        #leaderboard-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff0050 0%, #ff4500 100%);
+            border-radius: 2px;
         }
 
         .leaderboard-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            border-radius: 10px;
+            padding: 3px 5px;
+            margin-bottom: 2px;
+            border-radius: 4px;
             transition: all 0.3s ease;
+            background: rgba(255,255,255,0.05);
+            font-size: 0.65rem;
+            min-height: 26px;
         }
 
-        .leaderboard-item:nth-child(2) { /* First place */
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
+        .leaderboard-item:nth-child(2) {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             color: #333;
             font-weight: bold;
+            box-shadow: 0 3px 15px rgba(255, 215, 0, 0.4);
         }
 
-        .leaderboard-item:nth-child(3) { /* Second place */
-            background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+        .leaderboard-item:nth-child(3) {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
             color: #333;
         }
 
-        .leaderboard-item:nth-child(4) { /* Third place */
-            background: linear-gradient(45deg, #cd7f32, #e6a85c);
-            color: white;
-        }
-
-        .leaderboard-item:nth-child(n+5) { /* 4th and 5th place */
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-            color: #333;
+        .leaderboard-item:nth-child(4) {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a85c 100%);
+            color: #fff;
         }
 
         .rank {
-            font-size: 1.2rem;
+            font-size: 0.8rem;
             font-weight: bold;
-            width: 30px;
+            width: 18px;
+            text-align: center;
+        }
+
+        .player-info {
+            flex: 1;
+            margin-left: 5px;
         }
 
         .player-name {
-            flex: 1;
-            font-size: 1.1rem;
-            margin-left: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 1px;
         }
 
-        .points-display {
-            font-size: 1.1rem;
+        .player-points {
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+
+        .points-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 1px 5px;
+            border-radius: 3px;
             font-weight: bold;
+            font-size: 0.6rem;
         }
 
         .connection-status {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: bold;
+            top: 5px;
+            right: 5px;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
             z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
         }
 
         .connected {
-            background: #4ecdc4;
-            color: white;
+            color: #00ff88;
         }
 
         .disconnected {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            color: #ff4444;
         }
 
         .pulse {
-            animation: pulse 2s infinite;
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
@@ -255,82 +338,119 @@
             100% { transform: scale(1); }
         }
 
-        .question-changing {
-            animation: questionChange 1s ease;
-        }
-
-        @keyframes questionChange {
-            0% { 
-                transform: scale(1); 
-                background: white;
-            }
-            25% { 
-                transform: scale(1.05); 
-                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-                color: white;
-            }
-            50% { 
-                transform: scale(1.1); 
-                background: linear-gradient(45deg, #4ecdc4, #44a08d);
-                color: white;
-            }
-            75% { 
-                transform: scale(1.05); 
-                background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-                color: white;
-            }
-            100% { 
-                transform: scale(1); 
-                background: white;
-                color: #333;
-            }
-        }
-
         .new-question {
-            border: 3px solid #4ecdc4;
-            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+            animation: newQuestionFlash 1s ease;
+        }
+
+        @keyframes newQuestionFlash {
+            0%, 100% { background: linear-gradient(135deg, #232741 0%, #2a2d47 100%); }
+            25%, 75% { background: linear-gradient(135deg, #ff0050 0%, #ff4500 100%); }
+            50% { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); }
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Sound toggle button */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff0050 0%, #ff4500 100%);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 80, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: none; /* Hide sound toggle button */
+        }
+
+        .sound-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .sound-toggle.muted {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
         }
     </style>
 </head>
 <body>
     <div class="connection-status" id="connectionStatus">
-        <span class="loading"></span> Menghubungkan ke TikTok...
+        <span class="loading"></span> Menghubungkan...
     </div>
+
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">
+        🔊
+    </button>
 
     <div class="container">
         <div class="header">
-            <h1>🧮 KUIS MATEMATIKA LIVE TIKTOK 🧮</h1>
-            <div class="status">
-                📺 Live Quiz - Jawab di komentar untuk mendapat poin!
-            </div>
+            <div class="status">📝 Jawab soal di komentar</div>
         </div>
 
-        <div class="questions-grid">
-            <div th:each="question, iterStat : ${questions}" class="question-card" th:id="'card-' + ${iterStat.index}">
-                <div class="question-number" th:text="'Soal ' + (${iterStat.index} + 1)"></div>
-                <div class="question-text" th:id="'question-text-' + ${iterStat.index}" th:text="${question[0]} + ' = ?'"></div>
-                <div class="points" th:id="'points-' + ${iterStat.index}" th:text="${question[2]} + ' Poin'"></div>
-                <div class="correct-answer" th:id="'answer-' + ${iterStat.index}">
-                    <div class="username">Menunggu jawaban...</div>
-                    <div class="answer-info">Jawab <span th:id="'correct-answer-' + ${iterStat.index}" th:text="${question[1]}"></span> di komentar!</div>
+        <div class="main-content">
+            <div class="questions-section">
+                <div class="questions-container">
+                    <div th:each="question, iterStat : ${questions}" class="question-card" th:id="'card-' + ${iterStat.index}">
+                        <div class="question-header">
+                            <div class="question-number" th:text="'Soal ' + (${iterStat.index} + 1)"></div>
+                            <div class="points" th:id="'points-' + ${iterStat.index}" th:text="${question[2]} + ' Poin'"></div>
+                        </div>
+                        <div class="question-text" th:id="'question-text-' + ${iterStat.index}" th:text="${question[0]} + ' = ?'"></div>
+                        <div class="answer-section" th:id="'answer-' + ${iterStat.index}">
+                            <div class="waiting-text">⏳ Menunggu jawaban...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="leaderboard">
-            <h2>🏆 PERINGKAT TERATAS 🏆</h2>
-            <div id="leaderboard-content">
-                <div th:each="user, iterStat : ${topUsers}" class="leaderboard-item">
-                    <div class="rank" th:text="${iterStat.index + 1}"></div>
-                    <div class="player-name" th:text="${user.username}"></div>
-                    <div class="points-display" th:text="${user.totalPoints} + ' poin'"></div>
-                </div>
-                <div th:if="${#lists.isEmpty(topUsers)}" class="leaderboard-item">
-                    <div class="player-name">Belum ada yang menjawab...</div>
+            <div class="leaderboard-section">
+                <div class="leaderboard">
+                    <h2>🏆 LEADERBOARD 🏆</h2>
+                    <div id="leaderboard-content">
+                        <div th:each="user, iterStat : ${topUsers}" class="leaderboard-item">
+                            <div class="rank" th:text="${iterStat.index + 1}"></div>
+                            <div class="player-info">
+                                <div class="player-name" th:text="${user.username}"></div>
+                                <div class="player-points" th:text="${user.totalPoints} + ' poin'"></div>
+                            </div>
+                            <div class="points-badge" th:text="${user.totalPoints}"></div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(topUsers)}" class="leaderboard-item">
+                            <div class="player-info">
+                                <div class="player-name">Belum ada yang menjawab...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Audio elements for sound effects -->
+    <audio id="correctSound" preload="auto">
+        <source src="https://www.soundjay.com/misc/bell-ringing-05.wav" type="audio/wav">
+        <!-- Fallback: Using data URI for a simple ding sound -->
+        <source src="data:audio/wav;base64,UklGRkQCAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YSACAADh/+H/4f/h/+H/4f8GACEAVQCjAAMBcwHxAWwC3QI5A4ADtQPXA+kD8APxA+0D5QPYA8YDsAOWA3gDVgMwAwcD2gKqAnoCRwISAtwBpgFvATgBAAHIAJAAWQAiAOv/tf9//0r/Ff/h/q7+e/5J/hj+5/22/Yb9Vv0n/fj8yvyc/G78QfwU/Oj7vPuQ+2X7OvsP++X6u/qR+mj6P/oW+u352fmw+Yj5YPk4+RH56vi9+JX4bfhG+B/4+PfR96n3gvdb9zT3Dffm9r/2mPZx9kr2I/b89dX1rvWH9WD1OfUS9ev0xPSd9Hb0T/Qo9AH02vOz84zzZfM+8xfz8PLI8qHyevJT8izyBPLd8bXxjvFm8T/xF/Hw8MjwoHB4cFBwKHAAcNhvr2+Hb15vNm8Ob+VuvG6TbmtuQm4Zbv" type="audio/wav">
+    </audio>
 
     <!-- WebSocket Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
@@ -339,6 +459,29 @@
     <script>
         let stompClient = null;
         const questions = /*[[${questions}]]*/ [];
+        let soundEnabled = true;
+
+        // Sound toggle function
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const button = document.getElementById('soundToggle');
+            if (soundEnabled) {
+                button.innerHTML = '🔊';
+                button.classList.remove('muted');
+            } else {
+                button.innerHTML = '🔇';
+                button.classList.add('muted');
+            }
+        }
+
+        // Play sound effect
+        function playCorrectSound() {
+            if (soundEnabled) {
+                const audio = document.getElementById('correctSound');
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log('Could not play sound:', e));
+            }
+        }
 
         // Initialize WebSocket connection
         function connect() {
@@ -365,10 +508,10 @@
         function updateConnectionStatus(connected) {
             const statusElement = document.getElementById('connectionStatus');
             if (connected) {
-                statusElement.innerHTML = '✅ Terhubung ke TikTok Live';
+                statusElement.innerHTML = '✅ Terhubung';
                 statusElement.className = 'connection-status connected';
             } else {
-                statusElement.innerHTML = '❌ Terputus dari TikTok Live';
+                statusElement.innerHTML = '❌ Terputus';
                 statusElement.className = 'connection-status disconnected';
             }
         }
@@ -390,54 +533,49 @@
             const answerElement = document.getElementById('answer-' + questionIndex);
             const cardElement = document.getElementById('card-' + questionIndex);
             
+            // Play sound effect
+            playCorrectSound();
+            
             // Update answer display
             answerElement.innerHTML = `
-                <div class="username">🎉 ${username}</div>
-                <div class="answer-info">Jawab benar: ${answer} (+${points} poin)</div>
+                <div class="winner-info">
+                    <div class="winner-name">🎉 ${username}</div>
+                    <div class="winner-answer">Jawaban: ${answer} ✅</div>
+                </div>
             `;
             
-            // Show with animation
-            answerElement.classList.add('show', 'animate');
-            cardElement.classList.add('pulse', 'answered');
+            // Add animations
+            answerElement.classList.add('show-answer');
+            cardElement.classList.add('answered', 'pulse');
             
-            // Remove pulse animation after 3 seconds
+            // Remove pulse animation after 2 seconds
             setTimeout(() => {
                 cardElement.classList.remove('pulse');
-                answerElement.classList.remove('animate');
-            }, 3000);
+            }, 2000);
         }
 
         function changeQuestion(questionIndex, newQuestion, newAnswer, newPoints) {
             const questionTextElement = document.getElementById('question-text-' + questionIndex);
             const pointsElement = document.getElementById('points-' + questionIndex);
-            const correctAnswerElement = document.getElementById('correct-answer-' + questionIndex);
             const answerElement = document.getElementById('answer-' + questionIndex);
             const cardElement = document.getElementById('card-' + questionIndex);
             
             // Add changing animation
-            cardElement.classList.add('question-changing');
+            cardElement.classList.add('new-question');
             
             setTimeout(() => {
                 // Update question content
                 questionTextElement.textContent = newQuestion + ' = ?';
                 pointsElement.textContent = newPoints + ' Poin';
-                correctAnswerElement.textContent = newAnswer;
                 
                 // Reset answer display
                 answerElement.innerHTML = `
-                    <div class="username">Soal baru!</div>
-                    <div class="answer-info">Jawab <span>${newAnswer}</span> di komentar!</div>
+                    <div class="waiting-text">⏳ Menunggu jawaban...</div>
                 `;
-                answerElement.classList.add('show');
+                answerElement.classList.remove('show-answer');
                 
-                // Remove old states and add new question highlight
-                cardElement.classList.remove('answered', 'question-changing');
-                cardElement.classList.add('new-question');
-                
-                // Remove new question highlight after 5 seconds
-                setTimeout(() => {
-                    cardElement.classList.remove('new-question');
-                }, 5000);
+                // Remove old states
+                cardElement.classList.remove('answered', 'new-question');
                 
                 console.log(`Soal ${questionIndex + 1} diganti: ${newQuestion} = ${newAnswer}`);
             }, 500);
@@ -452,19 +590,36 @@
                     if (data.length === 0) {
                         leaderboardContent.innerHTML = `
                             <div class="leaderboard-item">
-                                <div class="player-name">Belum ada yang menjawab...</div>
+                                <div class="player-info">
+                                    <div class="player-name">Belum ada yang menjawab...</div>
+                                </div>
                             </div>
                         `;
                         return;
                     }
                     
-                    leaderboardContent.innerHTML = data.map((user, index) => `
-                        <div class="leaderboard-item">
-                            <div class="rank">${index + 1}</div>
-                            <div class="player-name">${user.username}</div>
-                            <div class="points-display">${user.totalPoints} poin</div>
-                        </div>
-                    `).join('');
+                    leaderboardContent.innerHTML = data.slice(0, 20).map((user, index) => {
+                        let itemClass = 'leaderboard-item';
+                        let rankEmoji = '';
+                        
+                        switch(index) {
+                            case 0: rankEmoji = '🥇'; break;
+                            case 1: rankEmoji = '🥈'; break;
+                            case 2: rankEmoji = '🥉'; break;
+                            default: rankEmoji = index + 1;
+                        }
+                        
+                        return `
+                            <div class="${itemClass}">
+                                <div class="rank">${rankEmoji}</div>
+                                <div class="player-info">
+                                    <div class="player-name">${user.username}</div>
+                                    <div class="player-points">${user.totalPoints} poin</div>
+                                </div>
+                                <div class="points-badge">${user.totalPoints}</div>
+                            </div>
+                        `;
+                    }).join('');
                 })
                 .catch(error => console.error('Error updating leaderboard:', error));
         }
@@ -473,17 +628,55 @@
         window.addEventListener('load', function() {
             connect();
             
-            // Update leaderboard every 10 seconds
-            setInterval(updateLeaderboard, 10000);
+            // Update leaderboard every 5 seconds
+            setInterval(updateLeaderboard, 5000);
+            
+            // Initial leaderboard update
+            updateLeaderboard();
         });
 
-        // Show all answers initially as "waiting"
+        // Create simple bell sound using Web Audio API as fallback
         window.addEventListener('DOMContentLoaded', function() {
-            for (let i = 0; i < questions.length; i++) {
-                const answerElement = document.getElementById('answer-' + i);
-                if (answerElement) {
-                    answerElement.classList.add('show');
-                }
+            // Try to create a simple bell sound using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                window.playBellSound = function() {
+                    if (!soundEnabled) return;
+                    
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 800; // Bell-like frequency
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                };
+                
+                // Override the playCorrectSound function to use Web Audio API
+                window.playCorrectSound = function() {
+                    if (soundEnabled) {
+                        try {
+                            // Try HTML audio first
+                            const audio = document.getElementById('correctSound');
+                            audio.play().catch(() => {
+                                // Fallback to Web Audio API
+                                window.playBellSound();
+                            });
+                        } catch (e) {
+                            window.playBellSound();
+                        }
+                    }
+                };
+            } catch (e) {
+                console.log('Web Audio API not supported');
             }
         });
     </script>

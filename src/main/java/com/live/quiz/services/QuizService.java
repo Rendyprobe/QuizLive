@@ -140,7 +140,7 @@ public class QuizService {
     }
     
     public List<User> getTopUsers() {
-        return userRepository.findTop5ByOrderByTotalPointsDesc();
+        return userRepository.findTop20ByOrderByTotalPointsDesc();
     }
     
     public List<AnswerHistory> getCorrectAnswers() {

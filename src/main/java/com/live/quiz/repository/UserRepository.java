@@ -13,8 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     Optional<User> findByUsername(String username);
     
-    @Query("SELECT u FROM User u ORDER BY u.totalPoints DESC LIMIT 5")
-    List<User> findTop5ByOrderByTotalPointsDesc();
+    @Query("SELECT u FROM User u ORDER BY u.totalPoints DESC LIMIT 20")
+    List<User> findTop20ByOrderByTotalPointsDesc();
     
     boolean existsByUsername(String username);
 }
